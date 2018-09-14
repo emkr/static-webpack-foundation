@@ -20,7 +20,6 @@ const config = {
     output: {
         filename: 'js/[name].js',
         path: path.join(__dirname, './dist'),
-        publicPath: '/'
     },
     devServer: {
         contentBase: path.join(__dirname, './'),
@@ -35,15 +34,17 @@ const config = {
         extensions: ['.js', '.vue', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            'core': path.resolve(__dirname, './src/renderer/inc/core'),
-            'components': path.resolve(__dirname, './src/renderer/components'),
+            'components': path.resolve(__dirname, './components'),
+            'images': path.resolve(__dirname, './assets/images')
         }
     },
     module: {
        rules: [
             {
                 test: /\.html$/,
-                loader: 'html-loader'
+                use: [
+                    'html-loader'
+                ]
             },
             {
                 test: /\.vue$/,
@@ -62,7 +63,7 @@ const config = {
                 test: /\.(sa|sc|c)ss$/,
                 use: [
                     devMode ? 'style-loader' : ExtractCssChunks.loader,
-                    'css-loader',
+                    'css-loader?url=false',
                     { 
                         loader:'postcss-loader',
                         options: {
@@ -75,7 +76,7 @@ const config = {
                 ],
             },
             {
-                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+                test: /\.(png|jpg|gif|eot|ttf|woff|woff2)$/,
                 loader: 'file-loader',
                 options: {
                     name: '[path][name].[ext]',
@@ -89,12 +90,20 @@ const config = {
                 options: {
                     presets: ['env']
                 }
-            }
+            },
+            {
+                test: /\.svg$/,
+                loader: 'vue-svg-loader',
+                options: {
+                    useSvgo: false, // (optional) default: true
+                }
+            },
         ]
     },
     plugins: [
         new CopyWebpackPlugin([
             { from: 'assets/images/', to: 'images/' },
+            { from: 'assets/fonts/', to: 'fonts/' },
         ], { copyUnmodified: true }),
         new VueLoaderPlugin(),
         new ExtractCssChunks({
@@ -112,10 +121,14 @@ const config = {
             inject: true,
             minify: true,
             hash: true,
-            cache: false,
+            cache: true,
             alwaysWriteToDisk: true
         }),
-        new HtmlWebpackHarddiskPlugin()
+        new HtmlWebpackHarddiskPlugin(),
+        new webpack.ProvidePlugin({
+            _ : ['lodash']
+        }),
+        new ProgressBarPlugin()
     ],
 }
 
