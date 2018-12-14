@@ -1,4 +1,3 @@
-# Static Webpack Build
+# Simple HTML w/ Webpack & Foundation
 
-A simple webpack build, with bootstrap installed, and Vue.js 
-Use it for infographics, or simple SPA's. 
+A simple structure for creating, simple HTML sites using Webpack and Foundation. 
