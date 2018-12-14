@@ -76,7 +76,15 @@ const config = {
                         }
                     },
                     {
-                        loader: 'sass-loader'
+                        loader: 'sass-loader',
+                        options: {
+                            data: `
+                            // Foundation override file
+                            @import "assets/sass/settings";
+                            @import "~foundation-sites/scss/foundation";
+                            @import "assets/sass/vendors/foundation";
+                            `
+                        }
                     }
                 ],
             },
