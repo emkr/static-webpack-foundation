@@ -1,16 +1,17 @@
 const path = require('path')
-const ExtractCssChunks = require("extract-css-chunks-webpack-plugin")
 const webpack = require('webpack')
-const WebpackBuildNotifierPlugin = require('webpack-build-notifier')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MinifyPlugin = require("babel-minify-webpack-plugin")
-const ProgressBarPlugin = require('progress-bar-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
-const devMode = process.env.NODE_ENV !== 'production'
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const MinifyPlugin = require("babel-minify-webpack-plugin")
+const WriteFilePlugin = require('write-file-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier')
+const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const devMode = process.env.NODE_ENV !== 'production'
 
 const config = {
     entry: {
@@ -25,6 +26,7 @@ const config = {
         contentBase: path.join(__dirname, './'),
         inline: true,
         port: 8080,
+        hot: true,
         watchContentBase: true,
         stats: {
             colors: true
@@ -53,17 +55,18 @@ const config = {
             {
                 test: /\.css$/,
                 use: [
-                  {
-                    loader: ExtractCssChunks.loader
-                  },
-                  "css-loader"
+                    'css-hot-loader',
+                    MiniCssExtractPlugin.loader,
+                    "css-loader"
                 ]
             },
             {
                 test: /\.(sa|sc|c)ss$/,
                 use: [
-                    devMode ? 'style-loader' : ExtractCssChunks.loader,
-                    'css-loader?url=false',
+                    devMode !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'postcss-loader',
+                    'sass-loader',
                     { 
                         loader:'postcss-loader',
                         options: {
@@ -72,7 +75,9 @@ const config = {
                             }
                         }
                     },
-                    'sass-loader',
+                    {
+                        loader: 'sass-loader'
+                    }
                 ],
             },
             {
@@ -106,7 +111,7 @@ const config = {
             { from: 'assets/fonts/', to: 'fonts/' },
         ], { copyUnmodified: true }),
         new VueLoaderPlugin(),
-        new ExtractCssChunks({
+        new MiniCssExtractPlugin({
               filename: "css/[name].css",
               chunkFilename: "[id].css",
               publicPath: path.join(__dirname, './assets/dist'),
@@ -114,6 +119,9 @@ const config = {
         new WebpackBuildNotifierPlugin({
             sound: 'Funk',
             successSound: 'Pop'
+        }),
+        new WriteFilePlugin({
+	        test: /^(?!.*(hot)).*/,
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
@@ -124,6 +132,7 @@ const config = {
             cache: true,
             alwaysWriteToDisk: true
         }),
+        new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackHarddiskPlugin(),
         new webpack.ProvidePlugin({
             _ : ['lodash']
