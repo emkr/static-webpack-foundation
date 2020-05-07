@@ -1,13 +1,10 @@
 {
-  "presets": [
-    "env",
-    "react",
-    "stage-0"
-  ],
+  "presets": ["@babel/preset-env"],
   "plugins": [
-    "transform-class-properties",
-    "transform-decorators",
-    "transform-react-constant-elements",
-    "transform-react-inline-elements"
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-syntax-dynamic-import",
+    "react-hot-loader/babel"
   ]
 }
