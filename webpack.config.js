@@ -12,7 +12,6 @@ const WebpackBuildNotifierPlugin = require('webpack-build-notifier')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const devMode = process.env.NODE_ENV !== 'production'
-
 const config = {
     entry: {
         app: path.join(__dirname, './assets/js/app.js')
@@ -20,14 +19,15 @@ const config = {
     mode: devMode === 'production' ? 'production' : 'development',
     output: {
         filename: 'js/[name].js',
+        publicPath: '/',
         path: path.join(__dirname, './dist'),
     },
     devServer: {
-        contentBase: path.join(__dirname, './'),
+        watchContentBase: true,
+        contentBase: path.join(__dirname, './templates'),
         inline: true,
         port: 8080,
         hot: true,
-        watchContentBase: true,
         stats: {
             colors: true
         },
@@ -122,7 +122,7 @@ const config = {
         new MiniCssExtractPlugin({
               filename: "css/[name].css",
               chunkFilename: "[id].css",
-              publicPath: path.join(__dirname, './assets/dist'),
+              publicPath: path.join(__dirname, './dist'),
         }),
         new WebpackBuildNotifierPlugin({
             sound: 'Funk',
@@ -133,7 +133,7 @@ const config = {
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: path.join(__dirname, './assets/templates/index.html'),
+            template: path.join(__dirname, './templates/index.html'),
             inject: true,
             minify: true,
             hash: true,

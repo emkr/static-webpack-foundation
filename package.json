@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "html-webpack-hot-plugin": "^1.2.2",
     "vue": "^2.6.11",
     "vuejs": "^3.0.1"
   },
